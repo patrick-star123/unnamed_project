@@ -2,13 +2,14 @@ package com.project.base.config;
 
 import com.alibaba.fastjson.JSON;
 import com.project.base.bean.ResponseBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -30,20 +32,43 @@ import java.io.PrintWriter;
 @Configuration
 public class MultiHttpSecurityConfiguration {
 
+    @Autowired
+    private DataSource dataSource;
+
+
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+
     @Configuration
     @Order(1)
     public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
-        @Override
+        /*@Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("123456")).roles("ADMIN","USER")
             .and()
             .withUser("appUser").password(passwordEncoder().encode("123456")).roles("USER");
+        }*/
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web.ignoring().antMatchers("/app/login/register");
         }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            String userQuery = "select user_name, user_pwd, available from user where user_name = ?";
+            String roleQuery = "select u.user_name, r.role_name from user u, user_role ur, role r " +
+                    "where u.id=ur.user_id and ur.role_id=r.id and u.user_name=?";
+
+            auth.jdbcAuthentication()
+                    .dataSource(dataSource)
+                    .usersByUsernameQuery(userQuery)
+                    .authoritiesByUsernameQuery(roleQuery);
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/app/**")

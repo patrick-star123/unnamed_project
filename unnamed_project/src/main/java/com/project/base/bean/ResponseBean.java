@@ -24,4 +24,11 @@ public class ResponseBean {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+    public static ResponseBean ok(String msg){
+        ResponseBean responseBean = new ResponseBean();
+        responseBean.setCode(200);
+        responseBean.setMsg(msg);
+        return responseBean;
+    }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/system/login")
 public class LoginApi {
 
-    @GetMapping("/sysLogin")
+    //@GetMapping("/sysLogin")
     public String sysLogin(){
         return "登录成功";
     }
