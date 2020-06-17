@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -34,11 +36,14 @@ public class MultiHttpSecurityConfiguration {
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
 
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+        //return NoOpPasswordEncoder.getInstance();
     }
 
 
@@ -52,6 +57,18 @@ public class MultiHttpSecurityConfiguration {
             .withUser("appUser").password(passwordEncoder().encode("123456")).roles("USER");
         }*/
 
+        /*@Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            String userQuery = "select user_name, user_pwd, user_available from user where user_name = ?";
+            String roleQuery = "select u.user_name, r.role_name from user u, user_role ur, role r " +
+                    "where u.user_id=ur.user_id and ur.role_id=r.role_id and u.user_name=?";
+
+            auth.jdbcAuthentication()
+                    .dataSource(dataSource)
+                    .usersByUsernameQuery(userQuery)
+                    .authoritiesByUsernameQuery(roleQuery);
+        }*/
+
         @Override
         public void configure(WebSecurity web) throws Exception {
             web.ignoring().antMatchers("/app/login/register");
@@ -59,14 +76,7 @@ public class MultiHttpSecurityConfiguration {
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            String userQuery = "select user_name, user_pwd, available from user where user_name = ?";
-            String roleQuery = "select u.user_name, r.role_name from user u, user_role ur, role r " +
-                    "where u.id=ur.user_id and ur.role_id=r.id and u.user_name=?";
-
-            auth.jdbcAuthentication()
-                    .dataSource(dataSource)
-                    .usersByUsernameQuery(userQuery)
-                    .authoritiesByUsernameQuery(roleQuery);
+            auth.userDetailsService(userDetailsService);
         }
 
         @Override

@@ -7,6 +7,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 public class PasswordUtil {
 
+    /**
+     * 使用BCryptPasswordEncoder加密
+     */
     public static String encryptionByBCrypt(String pwd){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(pwd);

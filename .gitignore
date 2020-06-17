@@ -5,3 +5,12 @@ HELP.md
 mvnw
 mvnw.cmd
 unnamed_project.iml
+.gradle/
+gradle/
+build/
+.pro
+*.iml
+*.properties
+gradlew
+gradlew.bat
+settings.gradle
