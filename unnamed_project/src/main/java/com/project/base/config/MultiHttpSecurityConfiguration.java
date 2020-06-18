@@ -34,10 +34,15 @@ import java.io.PrintWriter;
 @Configuration
 public class MultiHttpSecurityConfiguration {
 
-    @Autowired
-    private DataSource dataSource;
+    //@Autowired
+    //private DataSource dataSource;
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    public void AuthConfigureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
 
     @Bean
@@ -45,7 +50,6 @@ public class MultiHttpSecurityConfiguration {
         return new BCryptPasswordEncoder();
         //return NoOpPasswordEncoder.getInstance();
     }
-
 
     @Configuration
     @Order(1)
@@ -74,10 +78,10 @@ public class MultiHttpSecurityConfiguration {
             web.ignoring().antMatchers("/app/login/register");
         }
 
-        @Override
+        /*@Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             auth.userDetailsService(userDetailsService);
-        }
+        }*/
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -128,12 +132,12 @@ public class MultiHttpSecurityConfiguration {
     @Order(2)
     public class BackSecurityConfig extends WebSecurityConfigurerAdapter{
 
-        @Override
+        /*@Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("123456")).roles("ADMIN","USER")
             .and()
             .withUser("backUser").password(passwordEncoder().encode("123456")).roles("USER");
-        }
+        }*/
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {

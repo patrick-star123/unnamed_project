@@ -8,7 +8,7 @@ unnamed_project.iml
 .gradle/
 gradle/
 build/
-.pro
+*.pro
 *.iml
 *.properties
 gradlew
