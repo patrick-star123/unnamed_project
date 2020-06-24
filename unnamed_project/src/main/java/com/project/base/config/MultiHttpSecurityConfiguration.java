@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
@@ -149,9 +150,11 @@ public class MultiHttpSecurityConfiguration {
                     .loginProcessingUrl("/back/login")
                     .successHandler(new AuthenticationSuccessHandler() {
                         @Override
-                        public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-                            httpServletResponse.setContentType("application/json;charset=utf-8");
-                            PrintWriter out = httpServletResponse.getWriter();
+                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                            Cookie cookie = new Cookie("TOKEN", "123456");
+                            response.addCookie(cookie);
+                            response.setContentType("application/json;charset=utf-8");
+                            PrintWriter out = response.getWriter();
                             out.write("login back success");
                             out.flush();
                         }

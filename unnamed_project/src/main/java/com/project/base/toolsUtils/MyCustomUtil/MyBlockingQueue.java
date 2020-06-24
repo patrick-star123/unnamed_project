@@ -36,7 +36,7 @@ public class MyBlockingQueue<T> {
         }
     }
 
-    public synchronized T pop(){
+    public T pop(){
         synchronized (popMethodLock){
             if(queue.size() == 0){
                 popLock();

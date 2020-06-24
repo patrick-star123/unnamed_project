@@ -1,5 +1,9 @@
 server:
   port: 8010
+  servlet:
+    session:
+      cookie:
+        name: UNNAMED_SESSIONID
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
